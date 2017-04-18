@@ -1,31 +1,48 @@
 import re
 
+# Links:
+# - http://g1.globo.com/politica/noticia/2015/09/10-aprovam-e-69-reprovam-governo-dilma-diz-ibope.html
+# - https://pt.wikipedia.org/wiki/Ataques_de_11_de_setembro_de_2001
+# - http://extra.globo.com/casos-de-policia/disque-denuncia-oferece-recompensa-por-informacoes-sobre-homem-com-31-mandados-de-prisao-21126192.html
+# - http://www.diariodaregiao.com.br/cultura/casa-das-janelas-ganha-novo-endere%C3%A7o-1.685275
+
 def main():
 
-	text = "Hoje é dia 15 de novembro de 2017. Hoje é dia 15 de novembro. Meu telefone é (21) 90999 9999. Tenho 21 anos."
+	filename = input('Filename: ')
 
-	dataRE = r"\d{1,2}(\ de\s(\w+|\d{1,2})(\ de\ (\d{4}|\d{2}))?|\/\d{1,2}(\/(\d{4}|\d{2}))?)"
-	foneRE = r"\(?(\d{2})?\)?\ ?\d{4,5}[-\ ]?\d{4}"
+	filenameOut = '.'.join( [ t + '_tokenized' if i == 0 else t for i, t in enumerate(filename.split('.')) ] )
 
-	regexDict = {}
+	file = open(filename, 'r')
+	text = file.read()
+	file.close()
+
+	regexList = []
+
 	# Date Regex
-	regexDict[r"\d{1,2}(\sde\s(\w+|\d{1,2})(\sde\s(\d{4}|\d{2}))?|\/\d{1,2}(\/(\d{4}|\d{2}))?)"] = "_DATA_"
+	regexList.append( (r"\d{1,2}(\sde\s(\w+|\d{1,2})(\sde\s(\d{4}|\d{2}))?|\/\d{1,2}(\/(\d{4}|\d{2}))?)", "_DATA_") )
+
 	# Fone Regex
-	regexDict[r"\(?(\d{2})?\)?\ ?\d{4,5}[-\ ]?\d{4}"] = "_TELEFONE_"
+	regexList.append( (r"((\(\d{2}\))|(\d{2}))\ ?\d{4,5}[-\ ]?\d{4}", "_TELEFONE_") )
+
+	# Address Regex
+	regexList.append( (r"[Rr]ua(\ \w+)+(,?\ ?\d+)?", "_ENDERECO_") )
 
 	# Number Regex
-	regexDict[r"\d+\w*"] = "_NUMERO_"
-
+	regexList.append( (r"\d+[\w%]*", "_NUMERO_") )
+	
 	newText = text
 
-	for k in regexDict:
-		newText = re.sub(k, regexDict[k], newText)
+	for i in regexList:
+		newText = re.sub(i[0], i[1], newText)
 
-	print("Original text: \"%s\"" % (text,))
-	print("Tokenized text: \"%s\"" % (newText,))
+	fileOut = open(filenameOut, 'w')
+	fileOut.write(newText)
+	fileOut.close()
 
-	pass
+	print('Tokenized text saved to: %s\n\n' % (filenameOut,))
 
+	print("Original text: \n\n\"%s\"\n" % (text,))
+	print("Tokenized text: \n\n\"%s\"" % (newText,))
 
 if __name__ == '__main__':
 	main()

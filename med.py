@@ -1,7 +1,7 @@
 def main():
 
-	str1 = input('String 1: ')
-	str2 = input('String 2: ')
+	str1 = input('Text 1: ')
+	str2 = input('Text 2: ')
 
 	M = len(str1)
 	N = len(str2)
